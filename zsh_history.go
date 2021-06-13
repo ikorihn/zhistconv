@@ -1,11 +1,10 @@
 package zhistconv
 
-// 131は0x83の10進数表現 zsh_historyの特殊仕様
 const (
-	metachar = 131
-	start    = 130
-	end      = 158
-	xA0      = 160
+	// zsh_historyの仕様で、各バイトが0x83~0xA2のとき、その前に0x83を入れて6bit目を反転させる
+	x83 = 131
+	xA2 = 162
+	x20 = 32
 )
 
 func ParseZshHistory(latin1Byte []byte) string {
@@ -13,15 +12,14 @@ func ParseZshHistory(latin1Byte []byte) string {
 	var byteBuffer []byte
 
 	for _, codePoint := range latin1Byte {
-		if codePoint == metachar {
+		if codePoint == x83 {
 			isMarking = true
 			continue
 		}
 
 		if isMarking {
-			// 6bit目を反転させるために
-			// 0x20をXORする
-			invertCodePoint := codePoint ^ 32
+			// 6bit目を反転させるために0x20をXORする
+			invertCodePoint := codePoint ^ x20
 			byteBuffer = append(byteBuffer, invertCodePoint)
 			isMarking = false
 		} else {
@@ -32,23 +30,16 @@ func ParseZshHistory(latin1Byte []byte) string {
 	return string(byteBuffer)
 }
 
-func convertToZshHistory(latin1Byte []byte) string {
+func ConvertToZshHistory(latin1Byte []byte) string {
 	var byteBuffer []byte
 
 	for _, codePoint := range latin1Byte {
-		isInverse := false
 		// 131は0metacharの10進数表現
-		if (start < codePoint && codePoint < end) || codePoint == xA0 {
-			isInverse = true
-		}
-
-		if isInverse {
-			// 6bit目を反転させるために
-			// 0x20をXORする
-			invertCodePoint := codePoint ^ 32
-			byteBuffer = append(byteBuffer, metachar)
+		if x83 <= codePoint && codePoint <= xA2 {
+			// 6bit目を反転させるために0x20をXORする
+			invertCodePoint := codePoint ^ x20
+			byteBuffer = append(byteBuffer, x83)
 			byteBuffer = append(byteBuffer, invertCodePoint)
-			isInverse = false
 		} else {
 			byteBuffer = append(byteBuffer, codePoint)
 		}

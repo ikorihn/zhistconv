@@ -54,6 +54,16 @@ func main() {
 				fmt.Println(hist)
 			}
 
+			reverse := c.String("reverse")
+			if reverse != "" {
+				b, err := ioutil.ReadFile(reverse)
+				if err != nil {
+					return err
+				}
+				hist := zhistconv.ConvertToZshHistory(b)
+				fmt.Println(hist)
+			}
+
 			return nil
 		},
 	}
