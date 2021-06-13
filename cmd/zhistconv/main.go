@@ -37,11 +37,11 @@ func main() {
 		Action: func(c *cli.Context) error {
 			fishFilePath := c.String("fish")
 			if fishFilePath != "" {
-				fishHist, err := zhistconv.ParseFishHistory(fishFilePath)
+				_, err := zhistconv.ParseFishHistory(fishFilePath)
 				if err != nil {
 					return err
 				}
-				fmt.Println(fishHist)
+				return nil
 			}
 
 			parse := c.String("parse")
@@ -52,6 +52,7 @@ func main() {
 				}
 				hist := zhistconv.ParseZshHistory(b)
 				fmt.Println(hist)
+				return nil
 			}
 
 			reverse := c.String("reverse")
@@ -62,6 +63,7 @@ func main() {
 				}
 				hist := zhistconv.ConvertToZshHistory(b)
 				fmt.Println(hist)
+				return nil
 			}
 
 			return nil

@@ -1,7 +1,6 @@
 package zhistconv
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -9,9 +8,10 @@ import (
 )
 
 type FishHistory struct {
-	cmd     string
-	history int64
-	paths   []string
+	Cmd     string
+	History int64 `yaml:",omitempty"`
+	When    int64
+	Paths   []string `yaml:",omitempty"`
 }
 
 func ParseFishHistory(filePath string) ([]FishHistory, error) {
@@ -28,11 +28,10 @@ func ParseFishHistory(filePath string) ([]FishHistory, error) {
 		return nil, err
 	}
 
-	hist := []FishHistory{}
+	hist := make([]FishHistory, 0)
 	err = yaml.Unmarshal(bytes, &hist)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("history: %v\n", hist)
 	return hist, err
 }
