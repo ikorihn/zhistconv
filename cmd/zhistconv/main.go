@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -14,6 +15,57 @@ func main() {
 	app := &cli.App{
 		Name:  "f2zhistory",
 		Usage: "convert fish hist to zsh hist",
+		Commands: []*cli.Command{
+			{
+				Name:  "fish",
+				Usage: "convert fish history to zsh history",
+				Action: func(c *cli.Context) error {
+					path := c.Args().Get(0)
+					if path == "" {
+						return errors.New("please specify fish history file path")
+					}
+					_, err := zhistconv.ParseFishHistory(path)
+					if err != nil {
+						return err
+					}
+					return nil
+				},
+			},
+			{
+				Name:  "parse",
+				Usage: "make zsh_history readable",
+				Action: func(c *cli.Context) error {
+					path := c.Args().Get(0)
+					if path == "" {
+						return errors.New("please specify zsh history file path")
+					}
+					b, err := ioutil.ReadFile(path)
+					if err != nil {
+						return err
+					}
+					hist := zhistconv.ParseZshHistory(b)
+					fmt.Print(hist)
+					return nil
+				},
+			},
+			{
+				Name:  "reverse",
+				Usage: "convert parsed zsh_history to original",
+				Action: func(c *cli.Context) error {
+					path := c.Args().Get(0)
+					if path == "" {
+						return errors.New("please specify zsh history file path")
+					}
+					b, err := ioutil.ReadFile(path)
+					if err != nil {
+						return err
+					}
+					hist := zhistconv.ConvertToZshHistory(b)
+					fmt.Print(hist)
+					return nil
+				},
+			},
+		},
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:    "write",
@@ -21,52 +73,6 @@ func main() {
 				Aliases: []string{"w"},
 				Value:   false,
 			},
-			&cli.StringFlag{
-				Name:  "fish",
-				Usage: "specify fish_history file",
-			},
-			&cli.StringFlag{
-				Name:  "parse",
-				Usage: "convert zsh_history readable",
-			},
-			&cli.StringFlag{
-				Name:  "reverse",
-				Usage: "convert parsed zsh_history to original",
-			},
-		},
-		Action: func(c *cli.Context) error {
-			fishFilePath := c.String("fish")
-			if fishFilePath != "" {
-				_, err := zhistconv.ParseFishHistory(fishFilePath)
-				if err != nil {
-					return err
-				}
-				return nil
-			}
-
-			parse := c.String("parse")
-			if parse != "" {
-				b, err := ioutil.ReadFile(parse)
-				if err != nil {
-					return err
-				}
-				hist := zhistconv.ParseZshHistory(b)
-				fmt.Println(hist)
-				return nil
-			}
-
-			reverse := c.String("reverse")
-			if reverse != "" {
-				b, err := ioutil.ReadFile(reverse)
-				if err != nil {
-					return err
-				}
-				hist := zhistconv.ConvertToZshHistory(b)
-				fmt.Println(hist)
-				return nil
-			}
-
-			return nil
 		},
 	}
 
