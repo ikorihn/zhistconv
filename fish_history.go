@@ -1,37 +1,35 @@
 package zhistconv
 
 import (
-	"io/ioutil"
-	"os"
+	"fmt"
+	"strconv"
 
 	"gopkg.in/yaml.v2"
 )
 
 type FishHistory struct {
 	Cmd     string
-	History int64 `yaml:",omitempty"`
-	When    int64
+	When    int
+	History int64    `yaml:",omitempty"`
 	Paths   []string `yaml:",omitempty"`
 }
 
-func ParseFishHistory(filePath string) ([]FishHistory, error) {
-	if filePath == "" {
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			return nil, err
-		}
-		filePath = homeDir + "/.local/share/fish/fish_history"
-	}
-
-	bytes, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return nil, err
-	}
-
+func ParseFishHistory(fishHistoryBytes []byte) ([]byte, error) {
 	hist := make([]FishHistory, 0)
-	err = yaml.Unmarshal(bytes, &hist)
+	err := yaml.Unmarshal(fishHistoryBytes, &hist)
 	if err != nil {
 		return nil, err
 	}
-	return hist, err
+	zshHist := convertToZshHistory(hist)
+	return zshHist, nil
+}
+
+func convertToZshHistory(fishHist []FishHistory) []byte {
+	//: 1621066935:0;brew list
+	var zshHist string
+	for _, v := range fishHist {
+		zshHist += fmt.Sprintf(": %s:0;%s\n", strconv.Itoa(v.When), v.Cmd)
+	}
+	return []byte(zshHist)
+
 }

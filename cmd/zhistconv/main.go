@@ -22,12 +22,22 @@ func main() {
 				Action: func(c *cli.Context) error {
 					path := c.Args().Get(0)
 					if path == "" {
-						return errors.New("please specify fish history file path")
+						homeDir, err := os.UserHomeDir()
+						if err != nil {
+							return err
+						}
+						path = homeDir + "/.local/share/fish/fish_history"
 					}
-					_, err := zhistconv.ParseFishHistory(path)
+
+					b, err := ioutil.ReadFile(path)
 					if err != nil {
 						return err
 					}
+					hist, err := zhistconv.ParseFishHistory(b)
+					if err != nil {
+						return err
+					}
+					fmt.Print(string(hist))
 					return nil
 				},
 			},
@@ -44,7 +54,7 @@ func main() {
 						return err
 					}
 					hist := zhistconv.ParseZshHistory(b)
-					fmt.Print(hist)
+					fmt.Print(string(hist))
 					return nil
 				},
 			},
@@ -61,7 +71,7 @@ func main() {
 						return err
 					}
 					hist := zhistconv.ConvertToZshHistory(b)
-					fmt.Print(hist)
+					fmt.Print(string(hist))
 					return nil
 				},
 			},

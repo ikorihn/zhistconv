@@ -7,7 +7,7 @@ const (
 	x20 = 32
 )
 
-func ParseZshHistory(latin1Byte []byte) string {
+func ParseZshHistory(latin1Byte []byte) []byte {
 	isMarking := false
 	var byteBuffer []byte
 
@@ -27,10 +27,10 @@ func ParseZshHistory(latin1Byte []byte) string {
 		}
 	}
 
-	return string(byteBuffer)
+	return byteBuffer
 }
 
-func ConvertToZshHistory(latin1Byte []byte) string {
+func ConvertToZshHistory(latin1Byte []byte) []byte {
 	var byteBuffer []byte
 
 	for _, codePoint := range latin1Byte {
@@ -45,5 +45,5 @@ func ConvertToZshHistory(latin1Byte []byte) string {
 		}
 	}
 
-	return string(byteBuffer)
+	return byteBuffer
 }
