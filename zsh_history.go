@@ -1,4 +1,4 @@
-package main
+package zhistconv
 
 // 131は0x83の10進数表現 zsh_historyの特殊仕様
 const (
@@ -8,7 +8,7 @@ const (
 	xA0      = 160
 )
 
-func parseZshHistory(latin1Byte []byte) string {
+func ParseZshHistory(latin1Byte []byte) string {
 	isMarking := false
 	var byteBuffer []byte
 

@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/r57ty7/zhistconv"
 	"github.com/urfave/cli/v2"
 )
 
@@ -36,7 +37,7 @@ func main() {
 		Action: func(c *cli.Context) error {
 			fishFilePath := c.String("fish")
 			if fishFilePath != "" {
-				fishHist, err := parseFishHistory(fishFilePath)
+				fishHist, err := zhistconv.ParseFishHistory(fishFilePath)
 				if err != nil {
 					return err
 				}
@@ -49,7 +50,7 @@ func main() {
 				if err != nil {
 					return err
 				}
-				hist := parseZshHistory(b)
+				hist := zhistconv.ParseZshHistory(b)
 				fmt.Println(hist)
 			}
 

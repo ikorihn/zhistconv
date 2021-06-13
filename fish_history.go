@@ -1,4 +1,4 @@
-package main
+package zhistconv
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ type FishHistory struct {
 	paths   []string
 }
 
-func parseFishHistory(filePath string) ([]FishHistory, error) {
+func ParseFishHistory(filePath string) ([]FishHistory, error) {
 	if filePath == "" {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
