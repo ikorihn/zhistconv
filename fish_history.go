@@ -30,6 +30,6 @@ func convertToZshHistory(fishHist []FishHistory) []byte {
 	for _, v := range fishHist {
 		zshHist += fmt.Sprintf(": %s:0;%s\n", strconv.Itoa(v.When), v.Cmd)
 	}
-	return []byte(zshHist)
-
+	zshHistBytes := []byte(zshHist)
+	return ConvertToZshHistory(zshHistBytes)
 }
