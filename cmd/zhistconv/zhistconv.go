@@ -13,8 +13,8 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:  "f2zhistory",
-		Usage: "convert fish hist to zsh hist",
+		Name:  "zhistconv",
+		Usage: ".zsh_history converter",
 		Commands: []*cli.Command{
 			{
 				Name:  "fish",
@@ -61,6 +61,14 @@ func main() {
 			{
 				Name:  "reverse",
 				Usage: "convert parsed zsh_history to original",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:    "write",
+						Usage:   "overwrite zsh history file (default: sysout)",
+						Aliases: []string{"w"},
+						Value:   false,
+					},
+				},
 				Action: func(c *cli.Context) error {
 					path := c.Args().Get(0)
 					if path == "" {
@@ -71,17 +79,20 @@ func main() {
 						return err
 					}
 					hist := zhistconv.ConvertToZshHistory(b)
-					fmt.Print(string(hist))
+					if c.Bool("write") {
+						home, err := os.UserHomeDir()
+						if err != nil {
+							return err
+						}
+						err = ioutil.WriteFile(home+"/.zsh_history", hist, 0600)
+						if err != nil {
+							return err
+						}
+					} else {
+						fmt.Print(string(hist))
+					}
 					return nil
 				},
-			},
-		},
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:    "write",
-				Usage:   "overwrite zsh history file (default: sysout)",
-				Aliases: []string{"w"},
-				Value:   false,
 			},
 		},
 	}
