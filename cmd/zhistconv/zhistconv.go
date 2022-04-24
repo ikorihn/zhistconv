@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/r57ty7/zhistconv"
+	"github.com/ikorihn/zhistconv"
 	"github.com/urfave/cli/v2"
 )
 
