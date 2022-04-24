@@ -1,4 +1,4 @@
-module github.com/r57ty7/zhistconv
+module github.com/ikorihn/zhistconv
 
 go 1.16
 
